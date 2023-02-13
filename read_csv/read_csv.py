@@ -1,7 +1,9 @@
 import polars as pl
 
+FILE_PATH = '../sample_data.csv'
+
 ##### using read_csv #####
-df = pl.read_csv('sample_data.csv')
+df = pl.read_csv(FILE_PATH)
 print(df)
 
 '''
@@ -18,7 +20,7 @@ shape: (3, 4)
 '''
 
 # with parse_date
-df = pl.read_csv('sample_data.csv', parse_dates=True)
+df = pl.read_csv(FILE_PATH, parse_dates=True)
 print(df)
 '''
 shape: (3, 4)
@@ -34,7 +36,7 @@ shape: (3, 4)
 '''
 
 # with a new date type for a column
-df = pl.read_csv('sample_data.csv', parse_dates=True).with_columns(pl.col('Age').cast(pl.Int32))
+df = pl.read_csv(FILE_PATH, parse_dates=True).with_columns(pl.col('Age').cast(pl.Int32))
 print(df)
 '''
 shape: (3, 4)
@@ -50,7 +52,7 @@ shape: (3, 4)
 '''
 
 ##### using scan_csv #####
-q = pl.scan_csv('sample_data.csv')
+q = pl.scan_csv(FILE_PATH)
 print(q.collect())
 '''
 shape: (3, 4)
