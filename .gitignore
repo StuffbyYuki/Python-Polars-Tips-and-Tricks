@@ -3,3 +3,4 @@ __pycache__
 config.py
 **/validation.py
 **/*.csv
+**/*.ipynb_checkpoints
