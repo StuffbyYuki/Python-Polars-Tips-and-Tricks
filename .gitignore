@@ -4,3 +4,4 @@ config.py
 **/validation.py
 **/*.csv
 **/*.ipynb_checkpoints
+env
