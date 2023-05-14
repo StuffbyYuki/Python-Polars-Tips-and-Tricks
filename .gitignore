@@ -5,3 +5,4 @@ config.py
 **/*.csv
 **/*.ipynb_checkpoints
 env
+config.py
