@@ -5,4 +5,5 @@ config.py
 **/*.csv
 **/*.ipynb_checkpoints
 env
-config.py
+**/write_bigquery.py
+./r.txt
