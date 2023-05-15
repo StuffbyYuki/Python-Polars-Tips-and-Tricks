@@ -1,7 +1,7 @@
 import polars as pl
 
 # read in data
-df_pl = pl.scan_csv('../sample_data.csv').collect()
+df_pl = pl.scan_csv('../sample_data.csv')
 
 # prep for sql execution
 sql = pl.SQLContext()
