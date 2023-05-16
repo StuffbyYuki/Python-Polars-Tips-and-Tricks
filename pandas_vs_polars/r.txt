@@ -50,14 +50,14 @@ notebook==6.5.4
 notebook-shim==0.2.3
 numpy==1.24.3
 packaging==23.1
-pandas==2.0.1
+pandas==1.5.3
 pandocfilters==1.5.0
 parso==0.8.3
 pexpect==4.8.0
 pickleshare==0.7.5
 Pillow==9.5.0
 platformdirs==3.5.1
-polars==0.17.13
+polars==0.16.2
 prometheus-client==0.16.0
 prompt-toolkit==3.0.38
 psutil==5.9.5
