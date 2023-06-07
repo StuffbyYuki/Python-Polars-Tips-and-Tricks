@@ -48,30 +48,38 @@ def test_performance(func_to_test):
     performance test of one function - lazyframe vs dataframe
     """
 
-    if func_to_test.__name__ == 'write_to_csv':
-        return
+    def exec_func_lazyframe():
+        """
+        when write_to_csv func, don't collect()
+        """
+        if func_to_test.__name__ == 'write_to_csv':
+            return (
+                pl.scan_csv(file_path)
+                .pipe(func_to_test)
+            )
+        return (
+                pl.scan_csv(file_path)
+                .pipe(func_to_test)
+                .collect()
+            )
 
     ##### lazyframe #####
     start = time.time()
-    lazy_df = pl.scan_csv(file_path)
-    lazy_df = (
-        lazy_df
-        .pipe(func_to_test)
-    ).collect()
+    exec_func_lazyframe()
     end = time.time()
     time_in_s = round(end - start, 2)
-    print(f'LazyFrame took {time_in_s} seconds')
+    print(func_to_test.__name__)
+    print(f'-> LazyFrame took {time_in_s} seconds')
 
     ##### dataframe #####
     start = time.time()
-    df = pl.read_csv(file_path)
     df = (
-        df
+        pl.read_csv(file_path)
         .pipe(func_to_test)
     )
     end = time.time()
     time_in_s = round(end - start, 2)
-    print(f'DataFrame took {time_in_s} seconds')
+    print(f'-> DataFrame took {time_in_s} seconds')
 
 def test_performance_all():
     """
@@ -90,7 +98,7 @@ def test_performance_all():
     )
     end = time.time()
     time_in_s = round(end - start, 2)
-    print(f'LazyFrame took {time_in_s} seconds')
+    print(f'-> LazyFrame took {time_in_s} seconds')
 
     ##### dataframe #####
     start = time.time()
@@ -104,7 +112,7 @@ def test_performance_all():
     )
     end = time.time()
     time_in_s = round(end - start, 2)
-    print(f'DataFrame took {time_in_s} seconds')
+    print(f'-> DataFrame took {time_in_s} seconds')
 
 def visualize_result():
     return
