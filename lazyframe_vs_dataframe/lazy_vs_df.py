@@ -1,8 +1,7 @@
 import polars as pl
 import time
 
-# file_path = '../duckdb_vs_polars/data/2021_Yellow_Taxi_Trip_Data.csv' 
-file_path = '../duckdb_vs_polars/data/Taxi_Trips.csv' 
+file_path = '../duckdb_vs_polars/data/2021_Yellow_Taxi_Trip_Data.csv' 
 
 def select_n_filter_columns(df):
     return (
