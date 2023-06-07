@@ -8,3 +8,4 @@ env
 **/write_bigquery.py
 ./r.txt
 **/data
+.vscode
