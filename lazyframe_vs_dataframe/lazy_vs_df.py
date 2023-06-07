@@ -25,7 +25,6 @@ def some_groupby_agg(df):
 def some_window_func(df):
     return (
         df
-        # .filter(pl.col('VendorID')==1)
         .select(
             pl.col('VendorID'),
             pl.col('payment_type'),
