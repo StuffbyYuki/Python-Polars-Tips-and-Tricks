@@ -9,14 +9,14 @@ file_path = '../duckdb_vs_polars/data/2021_Yellow_Taxi_Trip_Data.csv'
 def select_n_filter_columns(df):
     return (
         df
-        .select(pl.col('VendorID', 'tpep_pickup_datetime', 'total_amount', 'tolls_amount', 'payment_type', 'tip_amount', 'fare_amount'))
+        .select(pl.col('VendorID', 'tpep_pickup_datetime', 'total_amount', 'tolls_amount', 'payment_type', 'tip_amount', 'fare_amount', 'PULocationID'))
         .filter(pl.col('total_amount') > 100)
     )
 
 def some_groupby_agg(df):
     return (
         df
-        .groupby('VendorID', 'payment_type')
+        .groupby('VendorID', 'payment_type', 'PULocationID')
         .agg(
             pl.col('tip_amount').mean().alias('avg_tip_amount')
         )
@@ -29,12 +29,20 @@ def some_window_func(df):
             pl.col('VendorID'),
             pl.col('payment_type'),
             pl.col('tpep_pickup_datetime'),
+            pl.col('PULocationID'),
             pl.col('tip_amount'),
             pl.col('fare_amount').mean().over('payment_type').alias('mean_fare_amt_per_payment_type'),
         )
         .with_columns(
             pl.col('mean_fare_amt_per_payment_type').rank('dense', descending=True).over('VendorID').alias('dense_rank')
         )
+    )
+
+def join_on_a_few_column(df):
+    unique_vendor_id_df = df.select('VendorID', 'payment_type', 'PULocationID').unique()
+    return (
+        df
+        .join(unique_vendor_id_df, on=['VendorID', 'payment_type', 'PULocationID'], how='left')
     )
 
 def write_to_csv(df):
@@ -100,6 +108,7 @@ def test_performance_all():
         .pipe(select_n_filter_columns)
         .pipe(some_window_func)
         .pipe(some_groupby_agg)
+        .pipe(join_on_a_few_column)
         .pipe(write_to_csv)
     )
     end = time.time()
@@ -114,6 +123,7 @@ def test_performance_all():
         .pipe(select_n_filter_columns)
         .pipe(some_window_func)
         .pipe(some_groupby_agg)
+        .pipe(join_on_a_few_column)
         .pipe(write_to_csv)
     )
     end = time.time()
@@ -151,9 +161,10 @@ def main():
         select_n_filter_columns, 
         some_window_func, 
         some_groupby_agg, 
+        join_on_a_few_column,
         write_to_csv
         ]
-    
+
     print('1. Testing performance - a function at a time')
     for func in functions:
         result_lazy, result_dataframe = test_performance(func)
