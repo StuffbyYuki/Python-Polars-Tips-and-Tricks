@@ -1,5 +1,8 @@
 import polars as pl
 import time
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 
 file_path = '../duckdb_vs_polars/data/2021_Yellow_Taxi_Trip_Data.csv' 
 
@@ -48,11 +51,13 @@ def test_performance(func_to_test):
     performance test of one function - lazyframe vs dataframe
     """
 
+    func_name = func_to_test.__name__
+
     def exec_func_lazyframe():
         """
         when write_to_csv func, don't collect()
         """
-        if func_to_test.__name__ == 'write_to_csv':
+        if func_name == 'write_to_csv':
             return (
                 pl.scan_csv(file_path)
                 .pipe(func_to_test)
@@ -70,6 +75,7 @@ def test_performance(func_to_test):
     time_in_s = round(end - start, 2)
     print(func_to_test.__name__)
     print(f'-> LazyFrame took {time_in_s} seconds')
+    result_lazy = [time_in_s, func_name, 'LazyFrame']
 
     ##### dataframe #####
     start = time.time()
@@ -80,6 +86,9 @@ def test_performance(func_to_test):
     end = time.time()
     time_in_s = round(end - start, 2)
     print(f'-> DataFrame took {time_in_s} seconds')
+    result_dataframe = [time_in_s, func_name, 'DataFrame']
+
+    return result_lazy, result_dataframe
 
 def test_performance_all():
     """
@@ -87,10 +96,8 @@ def test_performance_all():
     """
     ##### lazyframe #####
     start = time.time()
-    lazy_df = pl.scan_csv(file_path)
-
     lazy_df = (
-        lazy_df
+        pl.scan_csv(file_path)
         .pipe(select_n_filter_columns)
         .pipe(some_window_func)
         .pipe(some_groupby_agg)
@@ -99,12 +106,12 @@ def test_performance_all():
     end = time.time()
     time_in_s = round(end - start, 2)
     print(f'-> LazyFrame took {time_in_s} seconds')
+    result_lazy = [time_in_s, 'All funcs at once', 'LazyFrame']
 
     ##### dataframe #####
     start = time.time()
-    df = pl.read_csv(file_path)
     df = (
-        df
+        pl.read_csv(file_path)
         .pipe(select_n_filter_columns)
         .pipe(some_window_func)
         .pipe(some_groupby_agg)
@@ -113,20 +120,53 @@ def test_performance_all():
     end = time.time()
     time_in_s = round(end - start, 2)
     print(f'-> DataFrame took {time_in_s} seconds')
+    result_dataframe = [time_in_s, 'All funcs at once', 'DataFrame']
 
-def visualize_result():
-    return
+    return result_lazy, result_dataframe
+
+def visualize_result(data):
+    """
+    visualize retuslt and save it as png
+    """
+    sns.set_style(style=None)
+
+    df = pl.DataFrame(data, schema=['time in seconds', 'func', 'type'])
+
+    plt.figure(figsize=(20, 6))
+    ax = sns.barplot(x=list(df['func']), y=list(df['time in seconds']), hue=list(df['type']), errorbar=None, palette=['#000000', '#d3d3d3'])
+    # adding labels
+    for container in ax.containers:
+        ax.bar_label(container)
+    ax.set(xlabel='', ylabel='Time in Seconds')
+    plt.title('LazyFrame vs DataFrame - Polars')
+    plt.show()
+
+    # export to png
+    fig = ax.get_figure()
+    fig.savefig('LazyFrame vs DataFrame - Polars.png')
 
 def main():
 
+    data = []
+    functions = [
+        select_n_filter_columns, 
+        some_window_func, 
+        some_groupby_agg, 
+        write_to_csv
+        ]
+    
     print('1. Testing performance - a function at a time')
-    test_performance(select_n_filter_columns)
-    test_performance(some_window_func)
-    test_performance(some_groupby_agg)
-    test_performance(write_to_csv)
+    for func in functions:
+        result_lazy, result_dataframe = test_performance(func)
+        data.append(result_lazy)
+        data.append(result_dataframe)
 
     print('\n2. Testing performance - all functions at once')
-    test_performance_all()
+    result_lazy, result_dataframe = test_performance_all()
+    data.append(result_lazy)
+    data.append(result_dataframe)
+ 
+    visualize_result(data)
 
 if __name__ == '__main__':
     main()
