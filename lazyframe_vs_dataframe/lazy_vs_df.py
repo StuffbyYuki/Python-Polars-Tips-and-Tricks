@@ -45,7 +45,7 @@ def write_to_csv(df):
 
 def test_performance(func_to_test):
     """
-    performance test of a function - lazyframe vs dataframe
+    performance test of one function - lazyframe vs dataframe
     """
 
     if func_to_test.__name__ == 'write_to_csv':
@@ -57,7 +57,7 @@ def test_performance(func_to_test):
     lazy_df = (
         lazy_df
         .pipe(func_to_test)
-    )
+    ).collect()
     end = time.time()
     time_in_s = round(end - start, 2)
     print(f'LazyFrame took {time_in_s} seconds')
