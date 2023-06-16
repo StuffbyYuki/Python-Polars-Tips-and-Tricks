@@ -1,10 +1,31 @@
 import polars as pl
-import pyarrow.parquet as pq
+import pyarrow.dataset as ds
 import s3fs
+from config import BUCKET_NAME
 
-fs = s3fs.S3FileSystem()
-bucket = "<YOUR_BUCKET>"
-path = "<YOUR_PATH>"
+# set up 
+fs = s3fs.S3FileSystem(profile='s3_full_access')
 
-dataset = pq.ParquetDataset(f"s3://{bucket}/{path}", filesystem=fs)
-df = pl.from_arrow(dataset.read())
+# read parquet
+dataset = ds.dataset(f"s3://{BUCKET_NAME}/order_extract.parquet", filesystem=fs, format='parquet')
+df_parquet = pl.scan_pyarrow_dataset(dataset)
+print(df_parquet.collect().head())
+
+# read csv
+dataset = ds.dataset(f"s3://{BUCKET_NAME}/order_extract.csv", filesystem=fs, format='csv')
+df_csv = pl.scan_pyarrow_dataset(dataset)
+print(df_csv.collect().head())
+
+# prep df
+df = pl.DataFrame({
+    'ID': [1,2,3,4],
+    'Direction': ['up', 'down', 'right', 'left']
+})
+
+# write parquet
+with fs.open(f'{BUCKET_NAME}/direction.parquet', mode='wb') as f:
+    df.write_parquet(f)
+
+# write csv
+with fs.open(f'{BUCKET_NAME}/direction.csv', mode='wb') as f:
+    df.write_csv(f)
