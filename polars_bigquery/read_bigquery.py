@@ -1,3 +1,6 @@
+"""
+This code is from the polars doc: https://pola-rs.github.io/polars-book/user-guide/io/bigquery/
+"""
 import polars as pl
 from google.cloud import bigquery
 
