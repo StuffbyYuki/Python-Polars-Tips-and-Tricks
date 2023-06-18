@@ -29,3 +29,4 @@ with fs.open(f'{BUCKET_NAME}/direction.parquet', mode='wb') as f:
 # write csv
 with fs.open(f'{BUCKET_NAME}/direction.csv', mode='wb') as f:
     df.write_csv(f)
+    
