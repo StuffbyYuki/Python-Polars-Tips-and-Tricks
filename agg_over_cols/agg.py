@@ -25,7 +25,7 @@ df_1 = (
         pl.col('HP').mean().over('Type 1').alias('Avg HP Per Type 1')
     )
 )
-print(df_1.head())
+print(df_1.select(pl.col(['Name', 'Type 1', 'Total', 'agg over cols', 'Avg HP Per Type 1']).head()))
 
 # option 2 - select
 df_2 = (
@@ -36,4 +36,4 @@ df_2 = (
         pl.col('HP').mean().over('Type 1').alias('Avg HP Per Type 1')
     )
 )
-print(df_2.head())
+print(df_2.select(pl.col(['Name', 'Type 1', 'Total', 'agg over cols', 'Avg HP Per Type 1']).head()))
