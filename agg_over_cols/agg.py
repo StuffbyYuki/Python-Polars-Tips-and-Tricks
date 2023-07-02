@@ -9,7 +9,8 @@ print(df.head())
 agg_col = (
     df
     .select(
-        pl.all().exclude('#', 'Name', 'Type 1', 'Type 2', 'Generation', 'Legendary', 'Total')
+        pl.all().exclude('#', 'Name', 'Type 1', 'Type 2', 'Generation', 'Legendary', 'Total')  
+        # pl.col(['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'])  # another option
     )
     .sum(axis=1)
     .alias('agg over cols')
