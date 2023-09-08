@@ -9,3 +9,5 @@ env
 ./r.txt
 **/data
 .vscode
+!convert_str_to_date/*.csv
+
