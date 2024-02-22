@@ -1,0 +1,5 @@
+deltalake==0.15.3
+numpy==1.26.4
+polars==0.20.10
+pyarrow==15.0.0
+pyarrow-hotfix==0.6
