@@ -4,10 +4,11 @@ config.py
 **/validation.py
 **/*.csv
 **/*.ipynb_checkpoints
-env
+*env
 **/write_bigquery.py
 ./r.txt
 **/data
 .vscode
 !convert_str_to_date/*.csv
+!inspect_query_plans/*.csv
 
